@@ -198,6 +198,14 @@ class ManagementCompliance(BaseChoiceModel):
 
 class Management(BaseModel, JSONMixin, AreaMixin):
     project_lookup = 'project'
+    rule_fields = (
+        "no_take",
+        "periodic_closure",
+        "open_access",
+        "size_limits",
+        "gear_restriction",
+        "species_restriction",
+    )
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)

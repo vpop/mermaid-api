@@ -217,6 +217,7 @@ class BaseValidation(ValidationLogger):
         has_warns = False
         has_errors = False
         for validation_name in self._get_validation_method_names():
+            
             if self._ignore_validation(validation_name) is True:
                 self.log_record(
                     self.identifier,
@@ -386,6 +387,7 @@ class ManagementValidation(ModelValidation):
     name_match_percent = 0.5
     identifier = "management"
     name = "Management Regime"
+    RULE_ERROR = _("At least one management regime rule is required.")
 
     @needs_instance(MissingRecordSimilarity)
     def validate_similar(self):
@@ -493,7 +495,16 @@ class ManagementValidation(ModelValidation):
                 self.identifier, _(LikeMatchWarning.format(self.name)), data=data
             )
 
-        return True
+        return self.ok(self.identifier)
+
+    @needs_instance(RecordDoesntExist)
+    def validate_management_rules(self):
+        for rule_field in self.instance.rule_fields:
+            print(f"getattr(self.instance, rule_field): {getattr(self.instance, rule_field)}")
+            if getattr(self.instance, rule_field) is True:
+                return self.ok(self.identifier)
+
+        return self.error(self.identifier, self.RULE_ERROR, data=dict(id=str(self.instance.pk)))
 
 
 class ObserverValidation(ModelValidation):
